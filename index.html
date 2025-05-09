@@ -18,21 +18,85 @@
 
   <script type="text/babel">
 
+    const { useState } = React;
+
+    //  LA NOSTRA MODALE PER AGGIUNGERE ANIMALI SENZA L'ARRAY UTILIZZATO
+    function Modal({
+      title,
+      content,
+      show = false,
+      onClose = () => { },
+      onConfirm = () => { } // AGGIUNTA DEL PRIMO PUNTO
+
+    }) {
+      return show && ReactDOM.createPortal(
+        <div className="modal-container">
+          <div className="modal">
+            <h2>{title}</h2>
+            {content}
+            <div>
+              <button onClick={onClose}>Annulla</button>
+              <button onClick={onConfirm}>Conferma</button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )
+    }
+
     // COMPONENTE LISTA ANIMALI
     const ListaAnimali = () => {
 
       // LISTA DEGLI ANIMALI CON UN ARRAY
-      const animals = ['Cane', 'Gatto', 'Pappagallo', 'Elefante'];
+      // const animals = ['Cane', 'Gatto', 'Pappagallo', 'Elefante'];
+
+      const animalsChoices = ["Cane", "Gatto", "Pappagallo", "Cavallo", "Panda"];
+      const [animals, setAnimals] = useState([]);
+      const [show, setShow] = useState(false);
+      const [ animalName, setAnimalName ] = useState('');
+
+      // INSERIMENTO DI UN ANIMALE CASUALE CON UN INDICE RANDOMICO DALL'ARRAY animalChoices
+      const addAnimal = () => {
+        // const randomIndex = Math.floor(Math.random() * animalsChoices.length); // INDICE RANDOMICO
+        // const randomAnimal = animalsChoices[randomIndex]; // ANIMALE RANDOMICO
+        // setAnimals(curr => [...curr, randomAnimal]); // AGGIUNGERE UN ANIMALE AL NOSTRO ARRAY DI ANIMALI;
+        // curr => E' L'ARRAY CORRENTE DOVE RITORNIAMO UNO SPREAD DELL'ARRAY CORRENTE A CUI AGGIUNGIAMO IL randomAnimals
+        if(!animalName) return;
+        setAnimals(curr =>[...curr, animalName]);
+        // CHIUDERE LA NOSTRA MODALE SVUOTANDO L'INPUT
+        setAnimalName('');
+        setShow(false);
+      }
 
       return (
-        <details>
-          <summary> Animali </summary>
-          <ul>
-            {animals.map((animal, i) => (
-              <li key= {i}>{animal}</li>
-            ))}
-          </ul>
-        </details>
+
+        <>
+
+          <button onClick={() => setShow(true)}> Aggiungi Animale Casuale </button>
+
+          <details>
+            <summary> Animali </summary>
+            <ul>
+              {animals.map((animal, i) => (
+                <li key={i}>{animal}</li>
+              ))}
+            </ul>
+          </details>
+          <Modal
+            show={show}
+            onClose={() => setShow(false)}
+            onConfirma={addAnimal}
+            title="Aggiungi un Animale"
+            content={
+              <input
+                type="text"
+                value={animalName}
+                onChange={e => setAnimalName(e.target.value)}
+              />
+            }
+          />
+
+        </>
       )
     }
 
